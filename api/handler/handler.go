@@ -14,7 +14,9 @@ import (
 func PredictionGet(ctx *gin.Context) {
 	taskID := ctx.Param("prediction_id")
 	logger.Log().Info("resolve task id", zap.String("task_id", taskID))
-	// TODO: get result from redis
+	// TODO:
+	// 1. get result from redis
+	// 2. response to user
 }
 
 func PredictionCreate(ctx *gin.Context) {
@@ -35,4 +37,13 @@ func PredictionCreate(ctx *gin.Context) {
 	ctx.JSON(http.StatusAccepted, gin.H{
 		"task_id": taskID,
 	})
+}
+
+func PredictionCallback(ctx *gin.Context) {
+	taskID := ctx.Param("prediction_id")
+	logger.Log().Info("resolve task id", zap.String("task_id", taskID))
+	// TODO:
+	// 1. resolve callback data
+	// 2. save task result to redis and s3
+	// 3. update task status
 }

@@ -21,7 +21,7 @@ func GetClient() *asynq.Client {
 }
 
 func Enqueue(taskType string, payload []byte) (string, error) {
-	info, err := client.Enqueue(asynq.NewTask(PredictionTask, payload))
+	info, err := client.Enqueue(asynq.NewTask(taskType, payload))
 	if err != nil {
 		return "", err
 	}

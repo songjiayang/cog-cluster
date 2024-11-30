@@ -11,7 +11,9 @@ var (
 
 func NewServer() *asynq.Server {
 	srv = asynq.NewServer(
-		asynq.RedisClientOpt{Addr: redis.GetRedisAddr()},
+		asynq.RedisClientOpt{
+			Addr: redis.GetRedisAddr(),
+		},
 		asynq.Config{
 			Concurrency: 10,
 			Queues: map[string]int{

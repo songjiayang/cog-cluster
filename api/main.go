@@ -15,6 +15,7 @@ func main() {
 
 	srv.GET("/predictions/:prediction_id", handler.PredictionGet)
 	srv.POST("/predictions", handler.PredictionCreate)
+	srv.POST("/predictions/:prediction_id/callback", handler.PredictionCallback)
 
 	srv.Run("0.0.0.0:8000")
 }
