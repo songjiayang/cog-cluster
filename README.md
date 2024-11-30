@@ -13,3 +13,12 @@
 - cog-api: 负责异步推理任务的创建，查询和耗时评估。
 - cog-agent: 作为 cog-server 的 sidecar 进行部署，属于 cog-worker 的一部分，负责从 redis 拉取同 worker 类型的任务。
 - redis： 负责待处理异步推理任务的中心式存储。
+
+## 致谢
+
+感谢以下开源项目，没有它们就不会有本项目的存在。
+
+- [cog](https://github.com/replicate/cog)
+- [cog-comfyui](https://github.com/fofr/cog-comfyui)
+- [asynq](https://github.com/hibiken/asynq)
+  
