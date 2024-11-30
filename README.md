@@ -6,7 +6,7 @@
 
 ## 项目架构
 
-![cog-cluster](https://github.com/user-attachments/assets/4d777df6-232c-497d-86cb-a87abb2e88ee)
+![cog-cluster](https://github.com/user-attachments/assets/2e0c39c1-c934-4955-8efb-d4c502a66051)
 
 架构说明：
 
