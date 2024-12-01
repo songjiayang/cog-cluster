@@ -1,14 +1,10 @@
 package redis
 
-import "os"
+import "github.com/songjiayang/cog-cluster/pkg/util"
 
 var redisAddr = "127.0.0.1:6379"
 
 func GetRedisAddr() string {
-	addr := os.Getenv("REDIS_ADDR")
-	if addr != "" {
-		redisAddr = addr
-	}
-
+	redisAddr = util.GetEnvOr("REDIS_ADDR", redisAddr)
 	return redisAddr
 }

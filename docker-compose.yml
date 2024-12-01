@@ -1,0 +1,37 @@
+---
+services:
+  redis:
+    image: redis:latest
+  
+  cog-server:
+    image: resnet:latest
+    ports:
+    - 5000:5000
+
+  cog-api:
+    image: cog-api:0.1.0
+    ports:
+    - 8000:8000
+    environment:
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      redis:
+        condition: service_started
+    volumes:
+    - api_logs:/app/logs
+  
+  cog-agent:
+    image: cog-agent:0.1.0
+    environment:
+      COG_SERVER_ADDR: "http://cog-server:5000"
+      API_SERVER_ADDR: "http://cog-api:8000"
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      redis:
+        condition: service_started
+    volumes:
+    - agent_logs:/app/logs
+
+volumes:
+  api_logs:
+  agent_logs:

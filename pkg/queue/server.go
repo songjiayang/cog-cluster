@@ -15,12 +15,7 @@ func NewServer() *asynq.Server {
 			Addr: redis.GetRedisAddr(),
 		},
 		asynq.Config{
-			Concurrency: 10,
-			Queues: map[string]int{
-				"critical": 6,
-				"default":  3,
-				"low":      1,
-			},
+			Concurrency: 1,
 		},
 	)
 
