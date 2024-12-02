@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -11,14 +13,21 @@ import (
 	"github.com/songjiayang/cog-cluster/pkg/cog"
 	"github.com/songjiayang/cog-cluster/pkg/logger"
 	"github.com/songjiayang/cog-cluster/pkg/queue"
+	"github.com/songjiayang/cog-cluster/pkg/redis"
 )
 
 func PredictionGet(ctx *gin.Context) {
 	taskID := ctx.Param("prediction_id")
 	logger.Log().Info("resolve task id", zap.String("task_id", taskID))
-	// TODO:
-	// 1. get result from redis
-	// 2. response to user
+	output, err := redis.GetDB().Get(ctx, taskOutputKey(taskID)).Bytes()
+
+	if err != nil {
+		logger.Log().Info("resolve task output with error", zap.Error(err))
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	ctx.Data(200, "application/json; charset=utf-8", output)
 }
 
 func PredictionCreate(ctx *gin.Context) {
@@ -53,9 +62,14 @@ func PredictionCallback(ctx *gin.Context) {
 		return
 	}
 
-	// TODO:
-	// send data to redis
 	if output.IsSuccess() {
 		logger.Log().Info("task predict success", zap.Any("task", output))
+		data, _ := json.Marshal(output)
+		// set output value to redis
+		redis.GetDB().Set(ctx, taskOutputKey(taskID), data, 24*time.Hour)
 	}
+}
+
+func taskOutputKey(taskID string) string {
+	return fmt.Sprintf("%s:output", taskID)
 }
