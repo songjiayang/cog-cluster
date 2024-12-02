@@ -6,11 +6,16 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/songjiayang/cog-cluster/pkg/logger"
 	"github.com/songjiayang/cog-cluster/pkg/util"
 	"go.uber.org/zap"
+)
+
+var (
+	client *Client
 )
 
 type Client struct {
@@ -30,6 +35,13 @@ func NewClient() *Client {
 		apiServerAddr: util.GetEnvOr("API_SERVER_ADDR", "http://localhost:8000"),
 		httpClient:    &http.Client{Transport: tr},
 	}
+}
+
+func GetClient() *Client {
+	sync.OnceFunc(func() {
+		client = NewClient()
+	})()
+	return client
 }
 
 func (c *Client) Predict(taskID string, payload []byte) error {

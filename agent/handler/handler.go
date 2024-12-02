@@ -14,7 +14,7 @@ func PredictionProcess(ctx context.Context, t *asynq.Task) error {
 	taskID := t.ResultWriter().TaskID()
 	logger.Log().Info("resolve task", zap.String("task_id", taskID))
 
-	if err := cog.NewClient().Predict(taskID, t.Payload()); err != nil {
+	if err := cog.GetClient().Predict(taskID, t.Payload()); err != nil {
 		logger.Log().Error("cog process faield")
 		return err
 	}

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -43,6 +44,25 @@ func PredictionCreate(ctx *gin.Context) {
 		logger.Log().Error("add task with failed", zap.Error(err))
 		ctx.Status(http.StatusInternalServerError)
 		return
+	}
+
+	// for sync request
+	if ctx.GetHeader("Prefer") == "wait" {
+		ticker := time.NewTicker(250 * time.Millisecond)
+		timeout, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		for {
+			select {
+			case <-ticker.C:
+				output, err := redis.GetDB().Get(ctx, taskOutputKey(taskID)).Bytes()
+				if err == nil {
+					ctx.Data(200, "application/json; charset=utf-8", output)
+					return
+				}
+			case <-timeout.Done():
+				logger.Log().Error("predict timeout", zap.String("task_id", taskID))
+			}
+		}
 	}
 
 	ctx.JSON(http.StatusAccepted, gin.H{
