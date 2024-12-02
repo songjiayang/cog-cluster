@@ -51,6 +51,7 @@ func PredictionCreate(ctx *gin.Context) {
 		ticker := time.NewTicker(250 * time.Millisecond)
 		timeout, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
+	LOOP:
 		for {
 			select {
 			case <-ticker.C:
@@ -60,7 +61,8 @@ func PredictionCreate(ctx *gin.Context) {
 					return
 				}
 			case <-timeout.Done():
-				logger.Log().Error("predict timeout", zap.String("task_id", taskID))
+				logger.Log().Warn("predict timeout", zap.String("task_id", taskID))
+				break LOOP
 			}
 		}
 	}
