@@ -4,7 +4,7 @@ services:
     image: redis:latest
   
   cog-server:
-    image: resnet:latest
+    image: songjiayang/resnet:latest
     ports:
     - 5000:5000
 
