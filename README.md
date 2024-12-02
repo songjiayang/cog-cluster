@@ -21,7 +21,7 @@
 3. 发起 rsnet 推理请求到 cog-api:
 
 ```bash
-curl http://localhost:8000/predictions -X POST \
+curl http://localhost:8000/v1/predictions -X POST \
     -H 'Content-Type: application/json' \
     -d '{"input": {"image": "https://gist.githubusercontent.com/bfirsh/3c2115692682ae260932a67d93fd94a8/raw/56b19f53f7643bb6c0b822c410c366c3a6244de2/mystery.jpg"}}'
 
@@ -35,7 +35,7 @@ curl http://localhost:8000/predictions -X POST \
 4. 等待大概1s左右，通过  cog-api 获取推理结果：
 
 ```
-curl http://localhost:8000/predictions/8f36ddc5-132e-4e2e-8f3b-1c56eb366659
+curl http://localhost:8000/v1/predictions/8f36ddc5-132e-4e2e-8f3b-1c56eb366659
 ```
 
 可以看到根据 task id 我们可以获取最终推理的结果，结果还包含任务推理开始和完成时间。
@@ -45,7 +45,7 @@ curl http://localhost:8000/predictions/8f36ddc5-132e-4e2e-8f3b-1c56eb366659
 
 ```bash
 
-curl http://localhost:8000/predictions -X POST \
+curl http://localhost:8000/v1/predictions -X POST \
     -H 'Content-Type: application/json' \
     -H 'Prefer: wait' \
     -d '{"input": {"image": "https://gist.githubusercontent.com/bfirsh/3c2115692682ae260932a67d93fd94a8/raw/56b19f53f7643bb6c0b822c410c366c3a6244de2/mystery.jpg"}}'

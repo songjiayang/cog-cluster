@@ -51,7 +51,7 @@ func (c *Client) Predict(taskID string, payload []byte) error {
 		return err
 	}
 
-	input.Webhook = fmt.Sprintf("%s/predictions/%s/callback", c.apiServerAddr, taskID)
+	input.Webhook = fmt.Sprintf("%s/inner/predictions/%s/callback", c.apiServerAddr, taskID)
 	input.WebhookEventsFilter = []string{
 		"start",
 		"completed",
