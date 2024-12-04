@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/redis/go-redis/v9"
@@ -25,4 +26,8 @@ func GetDB() *redis.Client {
 	})()
 
 	return rdb
+}
+
+func TaskOutputKey(taskID string) string {
+	return fmt.Sprintf("%s:output", taskID)
 }

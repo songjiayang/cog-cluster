@@ -1,13 +1,11 @@
 package queue
 
 import (
+	"fmt"
+
 	"github.com/hibiken/asynq"
 
 	"github.com/songjiayang/cog-cluster/pkg/redis"
-)
-
-const (
-	PredictionTask = "predictions:demo"
 )
 
 var client *asynq.Client
@@ -18,6 +16,10 @@ func InitClient() {
 
 func GetClient() *asynq.Client {
 	return client
+}
+
+func GetPredictionTaskQueue(taskType string) string {
+	return fmt.Sprintf("predictions:%s", taskType)
 }
 
 func Enqueue(taskType string, payload []byte) (string, error) {

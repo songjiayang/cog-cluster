@@ -24,6 +24,7 @@ services:
     image: cog-agent:0.1.0
     environment:
       COG_SERVER_ADDR: "http://cog-server:5000"
+      COG_SERVER_TYPE: "resnet"
       API_SERVER_ADDR: "http://cog-api:8000"
       REDIS_ADDR: "redis:6379"
     depends_on:

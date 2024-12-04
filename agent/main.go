@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/hibiken/asynq"
 
@@ -16,7 +17,10 @@ func main() {
 	srv := queue.NewServer()
 	mux := asynq.NewServeMux()
 
-	mux.HandleFunc(queue.PredictionTask, handler.PredictionProcess)
+	mux.HandleFunc(
+		queue.GetPredictionTaskQueue(os.Getenv("COG_SERVER_TYPE")),
+		handler.PredictionProcess,
+	)
 
 	if err := srv.Run(mux); err != nil {
 		log.Fatalf("could not run server: %v", err)

@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -20,8 +19,7 @@ import (
 func PredictionGet(ctx *gin.Context) {
 	taskID := ctx.Param("prediction_id")
 	logger.Log().Info("resolve task id", zap.String("task_id", taskID))
-	output, err := redis.GetDB().Get(ctx, taskOutputKey(taskID)).Bytes()
-
+	output, err := redis.GetDB().Get(ctx, redis.TaskOutputKey(taskID)).Bytes()
 	if err != nil {
 		logger.Log().Info("resolve task output with error", zap.Error(err))
 		ctx.Status(http.StatusNotFound)
@@ -32,19 +30,29 @@ func PredictionGet(ctx *gin.Context) {
 }
 
 func PredictionCreate(ctx *gin.Context) {
-	payload, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
+	var input PredictionInput
+	if err := ctx.ShouldBindJSON(&input); err != nil {
 		logger.Log().Error("load request body with error", zap.Error(err))
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
 
-	taskID, err := queue.Enqueue(queue.PredictionTask, payload)
+	// TODO: version validate
+	if input.Version == "" {
+		logger.Log().Error("empty version input")
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
+	taskInput := input.Marshal()
+	taskQueue := queue.GetPredictionTaskQueue(input.Version)
+	taskID, err := queue.Enqueue(taskQueue, taskInput)
 	if err != nil {
 		logger.Log().Error("add task with failed", zap.Error(err))
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
+	logger.Log().Info("add a new task", zap.String("queue", taskQueue), zap.String("task", string(taskInput)))
 
 	// for sync request
 	if ctx.GetHeader("Prefer") == "wait" {
@@ -55,7 +63,7 @@ func PredictionCreate(ctx *gin.Context) {
 		for {
 			select {
 			case <-ticker.C:
-				output, err := redis.GetDB().Get(ctx, taskOutputKey(taskID)).Bytes()
+				output, err := redis.GetDB().Get(ctx, redis.TaskOutputKey(taskID)).Bytes()
 				if err == nil {
 					ctx.Data(200, "application/json; charset=utf-8", output)
 					return
@@ -88,10 +96,6 @@ func PredictionCallback(ctx *gin.Context) {
 		logger.Log().Info("task predict success", zap.Any("task", output))
 		data, _ := json.Marshal(output)
 		// set output value to redis
-		redis.GetDB().Set(ctx, taskOutputKey(taskID), data, 24*time.Hour)
+		redis.GetDB().Set(ctx, redis.TaskOutputKey(taskID), data, 24*time.Hour)
 	}
-}
-
-func taskOutputKey(taskID string) string {
-	return fmt.Sprintf("%s:output", taskID)
 }
