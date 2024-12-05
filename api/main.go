@@ -15,6 +15,7 @@ func main() {
 
 	srv.GET("/v1/predictions/:prediction_id", handler.PredictionGet)
 	srv.POST("/v1/predictions", handler.PredictionCreate)
+	srv.POST("/v1/models/:namespace/:model_name/predictions", handler.PredictionCreate)
 
 	// inner api
 	srv.POST("/inner/predictions/:prediction_id/callback", handler.PredictionCallback)

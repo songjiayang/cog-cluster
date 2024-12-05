@@ -22,8 +22,8 @@
 
 ```bash
 curl http://localhost:8000/v1/predictions -X POST \
-    -H 'Content-Type: application/json' \
-    -d '{"input": {"image": "https://gist.githubusercontent.com/bfirsh/3c2115692682ae260932a67d93fd94a8/raw/56b19f53f7643bb6c0b822c410c366c3a6244de2/mystery.jpg"}}'
+		-H 'Content-Type: application/json' \
+		-d '{"version": "songjiayang/resnet",  "input": {"image": "https://gist.githubusercontent.com/bfirsh/3c2115692682ae260932a67d93fd94a8/raw/56b19f53f7643bb6c0b822c410c366c3a6244de2/mystery.jpg"}}'
 
 =>
 
@@ -46,9 +46,9 @@ curl http://localhost:8000/v1/predictions/8f36ddc5-132e-4e2e-8f3b-1c56eb366659
 ```bash
 
 curl http://localhost:8000/v1/predictions -X POST \
-    -H 'Content-Type: application/json' \
-    -H 'Prefer: wait' \
-    -d '{"input": {"image": "https://gist.githubusercontent.com/bfirsh/3c2115692682ae260932a67d93fd94a8/raw/56b19f53f7643bb6c0b822c410c366c3a6244de2/mystery.jpg"}}'
+		-H 'Content-Type: application/json' \
+		-H 'Prefer: wait' \
+		-d '{"version": "songjiayang/resnet",  "input": {"image": "https://gist.githubusercontent.com/bfirsh/3c2115692682ae260932a67d93fd94a8/raw/56b19f53f7643bb6c0b822c410c366c3a6244de2/mystery.jpg"}}'
 
 => 
 

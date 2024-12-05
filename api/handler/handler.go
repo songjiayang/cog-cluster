@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -29,6 +30,17 @@ func PredictionGet(ctx *gin.Context) {
 	ctx.Data(200, "application/json; charset=utf-8", output)
 }
 
+func PredictionCreateWithModel(ctx *gin.Context) {
+	var input PredictionInput
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		logger.Log().Error("load request body with error", zap.Error(err))
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
+	logger.Log().Info("add new task", zap.String("model", ctx.Param("model")))
+}
+
 func PredictionCreate(ctx *gin.Context) {
 	var input PredictionInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -38,6 +50,12 @@ func PredictionCreate(ctx *gin.Context) {
 	}
 
 	// TODO: version validate
+	if input.Version == "" && ctx.Param("model_name") != "" {
+		model := fmt.Sprintf("%s/%s", ctx.Param("namespace"), ctx.Param("model_name"))
+		// TODO: resolve model version
+		input.Version = model
+	}
+
 	if input.Version == "" {
 		logger.Log().Error("empty version input")
 		ctx.Status(http.StatusBadRequest)
@@ -46,13 +64,14 @@ func PredictionCreate(ctx *gin.Context) {
 
 	taskInput := input.Marshal()
 	taskQueue := queue.GetPredictionTaskQueue(input.Version)
+	logger.Log().Info("add a new task", zap.String("queue", taskQueue), zap.String("task", string(taskInput)))
+
 	taskID, err := queue.Enqueue(taskQueue, taskInput)
 	if err != nil {
 		logger.Log().Error("add task with failed", zap.Error(err))
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
-	logger.Log().Info("add a new task", zap.String("queue", taskQueue), zap.String("task", string(taskInput)))
 
 	// for sync request
 	if ctx.GetHeader("Prefer") == "wait" {
